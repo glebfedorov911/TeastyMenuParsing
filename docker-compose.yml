@@ -1,0 +1,16 @@
+services:
+  backend:
+    build: .
+    container_name: teasty_menu_back
+    ports:
+      - "8012:8012"
+    networks:
+      - teasty_menu_network
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+
+networks:
+  teasty_menu_network:
+    driver: bridge
