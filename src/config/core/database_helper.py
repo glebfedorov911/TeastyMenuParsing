@@ -4,6 +4,8 @@ from sqlalchemy.ext.asyncio import (
 
 from typing import AsyncGenerator
 
+from src.config.core.settings import settings
+
 
 class DataBaseHelper:
     AUTOFLUSH = False
@@ -23,3 +25,8 @@ class DataBaseHelper:
     async def session_depends(self) -> AsyncGenerator[AsyncSession, None]:
         async with self.session_maker() as session:
             yield session
+
+database_helper = DataBaseHelper(
+    url=settings.database_settings.url,
+    echo=settings.database_settings.echo
+)
