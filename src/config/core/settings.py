@@ -13,6 +13,7 @@ class FileSettings(BaseSettings):
     path_logo: str = path_create_upload_fir + "logo/"
     path_avatar: str = path_create_upload_fir + "avatar/"
     path_img: str = path_create_upload_fir + "img/"
+    path_dish: str = path_create_upload_fir + "dish/"
 
 class Settings(BaseSettings):
     database_settings: DataBaseSettings = DataBaseSettings()
