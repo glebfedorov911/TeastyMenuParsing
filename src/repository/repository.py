@@ -56,7 +56,7 @@ class BaseRepository(Generic[ModelType, SessionType], ABC):
         raise ValueError("Not found records")
 
     @staticmethod
-    async def _commit_and_refresh_session(session: Type[SessionType], instance: ModelType | None) -> None:
+    async def _commit_and_refresh_session(session: Type[SessionType], instance: ModelType | None = None) -> None:
         await session.commit()
         if instance is not None:
             await session.refresh(instance)
