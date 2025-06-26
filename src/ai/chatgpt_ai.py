@@ -17,10 +17,18 @@ class ChatGptAI(AI):
         self.model = model
         self.http_client = http_client
 
-    async def send_prompt(self, url: str, prompt_system: str, prompt_user: str) -> dict:
+    async def send_prompt(self, url: str, prompt_system: str, prompt_user: str) -> str:
+        try:
+            return await self._send_prompt(url, prompt_system, prompt_user)
+        except Exception as e:
+            print(e)
+            raise "Invalid request"
+
+    async def _send_prompt(self, url: str, prompt_system: str, prompt_user: str) -> dict:
         headers = self._create_headers()
         json = self._create_prompt(prompt_system, prompt_user)
         response = await self.http_client.send_request("POST", url, headers=headers, json=json)
+        response.raise_for_status()
         return response.json()
 
     def _create_headers(self) -> dict:
