@@ -18,7 +18,9 @@ class BaseRepository(Generic[ModelType, SessionType], ABC):
         records = await self._get_result(session, stmt)
         return self._get_first_record(records)
 
-    async def get_all(self, session: Type[SessionType], offset: int = 0, limit: int = 10) -> Sequence[ModelType]:
+    async def get_all(
+            self, session: Type[SessionType], offset: int = 0, limit: int = 10
+    ) -> Tuple[int, Sequence[ModelType]]:
         stmt = select(self.model).offset(offset).limit(limit)
         stmt_count = select(func.count()).select_from(self.model)
         records = await self._get_result(session, stmt)
