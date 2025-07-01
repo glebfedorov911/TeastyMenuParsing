@@ -9,11 +9,12 @@ class DataBaseSettings(BaseModel):
     echo: bool = os.getenv("DATABASE_ECHO") == "True"
 
 class FileSettings(BaseSettings):
-    path_create_upload_fir: str = "src/statis/uploads/"
+    path_create_upload_fir: str = "src/static/uploads/"
     path_logo: str = path_create_upload_fir + "logo/"
     path_avatar: str = path_create_upload_fir + "avatar/"
     path_img: str = path_create_upload_fir + "img/"
     path_dish: str = path_create_upload_fir + "dish/"
+    path_parser: str = path_create_upload_fir + "parser/"
 
 class Settings(BaseSettings):
     database_settings: DataBaseSettings = DataBaseSettings()
@@ -22,7 +23,7 @@ class Settings(BaseSettings):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        for dirpath in self.file_settings.model_dump():
+        for _, dirpath in self.file_settings.model_dump().items():
             os.makedirs(dirpath, exist_ok=True)
 
 settings = Settings()
