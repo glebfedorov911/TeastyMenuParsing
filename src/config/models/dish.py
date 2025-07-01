@@ -10,7 +10,7 @@ dish_ingredient_association = Table(
     "restoran_dish_ingredients",
     Base.metadata,
     Column("dish_id", ForeignKey("restoran_dish.id"), primary_key=True),
-    Column("ingredient_id", ForeignKey("restoran_ingredients.id"), primary_key=True)
+    Column("ingredients_id", ForeignKey("restoran_ingredients.id"), primary_key=True)
 )
 
 dish_label_association = Table(
@@ -24,10 +24,10 @@ dish_label_association = Table(
 class Dish(Base):
     __tablename__ = "restoran_dish"
 
-    iiko_id_product: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    rkeeper_id_product: Mapped[int | None] = mapped_column(nullable=True)
-    rkeeper_code_product: Mapped[int | None] = mapped_column(nullable=True)
-    rkeeper_GUIDString: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    iiko_id_product: Mapped[str | None] = mapped_column(String(255), default="", nullable=True)
+    rkeeper_id_product: Mapped[int | None] = mapped_column(default=0, nullable=True)
+    rkeeper_code_product: Mapped[int | None] = mapped_column(default=0, nullable=True)
+    rkeeper_GUIDString: Mapped[str | None] = mapped_column(String(255), default="", nullable=True)
 
     id_rest_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("restoran_restaurant.id"))
 
