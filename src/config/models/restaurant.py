@@ -12,10 +12,10 @@ class Restaurant(Base):
 
     name: Mapped[str] = mapped_column(String(500))
     legal_person: Mapped[str] = mapped_column(String(500))
-    id_iiko: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    org_iiko: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    id_chanel: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    logo: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    id_iiko: Mapped[Optional[str]] = mapped_column(String(500), default="", nullable=True)
+    org_iiko: Mapped[Optional[str]] = mapped_column(String(500), default="", nullable=True)
+    id_chanel: Mapped[Optional[str]] = mapped_column(String(500), default="", nullable=True)
+    logo: Mapped[Optional[str]] = mapped_column(String(500), default="", nullable=True)
     using_iiko: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     rkeeper_address: Mapped[Optional[str]] = mapped_column(String(25), nullable=True)
@@ -28,7 +28,7 @@ class Restaurant(Base):
 
     using_postpaid: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
-    administartor_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user_accounts.id"), nullable=False)
+    administartor_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("accounts_useraccounts.id"), nullable=False)
 
     def __str__(self):
         return f"{self.name} | {self.administartor_id} | {self.id}"
