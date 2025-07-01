@@ -12,7 +12,7 @@ class BaseRequestHttpxClient:
 
 class GetHttpxClient(BaseRequestHttpxClient):
 
-    async def send_request(self, url, headers):
+    async def send_request(self, url, headers: dict | None = None) -> httpx.Response:
         return await super()._send_request("GET", url, headers=headers)
 
 class PostHttpxClient(BaseRequestHttpxClient):
