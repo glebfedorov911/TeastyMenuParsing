@@ -15,6 +15,7 @@ class FileSettings(BaseSettings):
     path_img: str = path_create_upload_fir + "img/"
     path_dish: str = path_create_upload_fir + "dish/"
     path_parser: str = path_create_upload_fir + "parser/"
+    path_qr: str = path_create_upload_fir + "qr/"
 
 class Settings(BaseSettings):
     database_settings: DataBaseSettings = DataBaseSettings()
