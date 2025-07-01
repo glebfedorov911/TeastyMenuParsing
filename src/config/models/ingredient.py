@@ -12,7 +12,7 @@ class Ingredient(Base):
 
     name: Mapped[str] = mapped_column(String(500), nullable=False)
 
-    id_rest: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("restoran_restaurant.id"), nullable=True)
+    id_rest_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("restoran_restaurant.id"), nullable=True)
 
     dishes = relationship("Dish", secondary=dish_ingredient_association, back_populates="ingredients")
 
