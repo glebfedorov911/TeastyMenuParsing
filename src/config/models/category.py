@@ -12,7 +12,7 @@ class Category(Base):
     name: Mapped[str] = mapped_column(String(500), nullable=False)
     parrent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("restoran_category.id"), nullable=True)
 
-    parrent: Mapped[Optional["Category"]] = relationship("Category", remote_side=[id], backref="children")
+    parrent: Mapped[Optional["Category"]] = relationship("Category", remote_side="[Category.id]", backref="children")
 
     des: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     show: Mapped[bool] = mapped_column(Boolean, default=True)
