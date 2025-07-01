@@ -1,7 +1,8 @@
 from abc import ABC
 from typing import TypeVar, Type, Sequence, Tuple, Dict, Generic
 
-from sqlalchemy import select, Result, Select, func
+from sqlalchemy import select, Result, Select, func, and_
+from sqlalchemy.orm import RelationshipProperty
 
 
 ModelType = TypeVar('ModelType')
@@ -28,7 +29,7 @@ class BaseRepository(Generic[ModelType, SessionType], ABC):
         return count_records.scalar_one(), records
 
     async def add(self, session: SessionType, data_add: Dict[str, any]) -> ModelType:
-        found, instance = self._get_if_already_exists(session, data_add)
+        found, instance = await self._get_if_already_exists(session, data_add)
         if found:
             return instance
 
@@ -75,8 +76,23 @@ class BaseRepository(Generic[ModelType, SessionType], ABC):
     async def _get_if_already_exists(
             self, session: SessionType, data_add: Dict[str, any]
     ) -> Tuple[bool, ModelType | None]:
-        stmt = select(self.model).where(**data_add)
+        conditions = self._get_all_conditions(data_add)
+        stmt = select(self.model).where(and_(*conditions))
         result = await session.execute(stmt)
         if instance := result.scalars().first():
             return True, instance
         return False, None
+
+    def _get_all_conditions(self, data_add: dict):
+        conditions = []
+        for field, value in data_add.items():
+            if not hasattr(self.model, field):
+                continue
+
+            attr = getattr(self.model, field)
+            if isinstance(attr.property, RelationshipProperty):
+                continue
+
+            conditions.append(attr == value)
+
+        return conditions
