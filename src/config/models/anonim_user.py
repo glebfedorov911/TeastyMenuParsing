@@ -29,8 +29,9 @@ class AnonimUser(Base):
 
     session_id: Mapped[str] = mapped_column(String(255), unique=True)
     avatar_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("accounts_avataranonimuser.id"), nullable=True)
-
     avatar_url: Mapped[str] = mapped_column(String(255))
+
+    users = relationship("User", back_populates="anonim_user")
 
     create_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     update_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.utcnow)
