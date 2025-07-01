@@ -1,36 +1,36 @@
-from abc import abstractmethod
-
 import httpx
 
 from src.httpclient.http_client import HttpClient
 
-
 class BaseRequestHttpxClient:
 
-    async def send_request(self, method, url, *args, **kwargs):
-        async with httpx.AsyncClient() as client:
+    async def _send_request(self, method, url, *args, **kwargs):
+        async with httpx.AsyncClient(timeout=httpx.Timeout(60.0, connect=30.0)) as client:
             request = client.build_request(method, url, *args, **kwargs)
             response = await client.send(request)
             return response
 
 class GetHttpxClient(BaseRequestHttpxClient):
 
-    async def send_request(self, url, headers, method="GET"):
-        return await super().send_request(method, url, headers=headers)
+    async def send_request(self, url, headers):
+        return await super()._send_request("GET", url, headers=headers)
 
 class PostHttpxClient(BaseRequestHttpxClient):
 
-    async def send_request(self, url, headers, json, method="POST"):
-        return await super().send_request(method, url, json=json, headers=headers)
+    async def send_request(self, url, headers, json):
+        return await super()._send_request("POST", url, json=json, headers=headers)
 
 class HttpxHttpClient(HttpClient):
 
 
     async def send_request(self, method, url, /, **kwargs):
+        client = None
         match method.lower():
             case 'get':
-                return GetHttpxClient().send_request(method.upper(), url, **kwargs)
+                client = GetHttpxClient()
             case 'post':
-                return PostHttpxClient().send_request(method.upper(), url, **kwargs)
+                client = PostHttpxClient()
             case _:
                 raise ValueError("Not available method")
+
+        return await client.send_request(url, **kwargs)
