@@ -23,15 +23,20 @@ class User(Base):
 
     phone: Mapped[str] = mapped_column(String(30), unique=True)
     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    password: Mapped[str] = mapped_column(String(255), nullable=True)
 
     avatar: Mapped[Optional[str]] = mapped_column(nullable=True)
     birthday: Mapped[Optional[datetime]] = mapped_column(nullable=True)
 
-    anonim_user_obj: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("accounts_anonimuser.id"), nullable=True)
+    anonim_user_obj_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("accounts_anonimuser.id"), nullable=True)
+    anonim_user = relationship("AnonimUser", back_populates="users")
 
-    role: Mapped[Optional[RoleEnum]] = mapped_column(Enum(RoleEnum), nullable=True)
+    role: Mapped[Optional[RoleEnum]] = mapped_column(String, nullable=True)
 
-    is_active: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True, default=False)
+    is_active: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True, default=True)
     is_confirmed: Mapped[bool] = mapped_column(Boolean, default=False)
     in_consideration: Mapped[bool] = mapped_column(Boolean, default=True)
     is_staff: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
+
+from src.config.models.anonim_user import AnonimUser
