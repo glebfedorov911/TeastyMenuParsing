@@ -41,12 +41,15 @@ async def parse_data_qr(
     session: AsyncSession = Depends(database_helper.session_depends),
     menu_service: MenuService = Depends(get_menu_service),
 ):
-    qr = QRReaderCV2()
-    qr_name = f"temp_qr_code_{random.randint(1, 999999)}"
-    qr_path = f"{settings.file_settings.path_qr}{qr_name}.png"
-    with open(qr_path, "wb") as buffer:
-        shutil.copyfileobj(qr_code.file, buffer)
-    url = qr.read(qr_path)
+    try:
+        qr = QRReaderCV2()
+        qr_name = f"temp_qr_code_{random.randint(1, 999999)}"
+        qr_path = f"{settings.file_settings.path_qr}{qr_name}.png"
+        with open(qr_path, "wb") as buffer:
+            shutil.copyfileobj(qr_code.file, buffer)
+        url = qr.read(qr_path)
+    except:
+        return {"message": "Bad format for image (qr-code). Need: png or jpg (jpeg)"}
 
     background_tasks.add_task(
         menu_service.add_position_to_menu,
