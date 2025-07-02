@@ -75,12 +75,14 @@ class MenuService:
                 if not url in href:
                     href = url + href
                 hrefs.append(href)
+                print(f"Добавлено url: {href}")
 
             for i, href in enumerate(hrefs):
                 try:
                     await parser.load_page(href)
                     path = await parser.download_html(f"page_{i + 1}.txt")
                     paths.append(path)
+                    print(f"Сохраняем страницу {i+1}")
                 except:
                     print("Ошибка загрузки страницы")
                     continue
@@ -169,6 +171,7 @@ class MenuService:
     async def _save_dishes(self, session: AsyncSession, contents: List[dict], rest_id: str):
         exists_ingredients = {}
         exists_category = {}
+        exists_dish = {}
 
         for content in contents:
             ingredients = await self._process_ingredients(session, content.get("ingredients", []), rest_id, exists_ingredients)
@@ -176,17 +179,22 @@ class MenuService:
             img_url = content.get("img", None)
             path_to_save_photo = await self._download_image(content.get("name", ""), img_url)
 
-            dish_data = {
-                "id_rest_id": rest_id,
-                "cat_id_id": category.id,
-                "name": content.get("name", f"Неизвестное блюдо_{random.randint(1, 100000)}"),
-                "description": content.get("desc", ""),
-                "cost": int(content.get("price", "0")) if content.get("price", "0").isdigit() else 0,
-                "show": True,
-                "ingredients": ingredients,
-                "photo": path_to_save_photo,
-            }
-            await self.dish_repo.add(session, dish_data)
+            price = content.get("price", "0")
+            price = price.split(" ")[0]
+            dish_name = content.get("name", f"Неизвестное блюдо_{random.randint(1, 100000)}")
+            if dish_name not in exists_dish:
+                dish_data = {
+                    "id_rest_id": rest_id,
+                    "cat_id_id": category.id,
+                    "name": dish_name,
+                    "description": content.get("desc", ""),
+                    "cost": int(price) if price.isdigit() else 0,
+                    "show": True,
+                    "ingredients": ingredients,
+                    "photo": path_to_save_photo,
+                }
+                dish = await self.dish_repo.add(session, dish_data)
+                exists_dish[dish_name] = dish
 
     async def _process_ingredients(self, session, ingredient_names, rest_id, cache):
         ingredients = []
@@ -238,7 +246,11 @@ class MenuService:
             'TE': 'trailers'
         }
 
-        response = await self.http_client.send_request("GET", img_url, headers=headers)
+        try:
+            response = await self.http_client.send_request("GET", img_url, headers=headers)
+        except Exception as e:
+            print("Неудалось получить фотографию")
+            return None
         if response.status_code == 200 and "image" in response.headers.get("content-type", ""):
             path_to_save_photo = f"{settings.file_settings.path_dish}{photo_name}_{random.randint(1, 100000)}.jpeg"
             with open(path_to_save_photo, 'wb') as file:
